@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokédex Master</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="pokedex-container">
+        <div class="pokedex">
+            <div class="pokedex-header">
+                <h1>Pokédex Master</h1>
+                <div class="header-lights">
+                    <div class="light red"></div>
+                    <div class="light yellow"></div>
+                    <div class="light green"></div>
+                </div>
+            </div>
+            <div class="pokedex-screen">
+                <div class="screen-content" id="pokemonInfo">
+                    <p class="welcome-message">Bem-vindo à Pokédex Master!</p>
+                </div>
+            </div>
+            <div class="pokedex-controls">
+                <input type="text" id="pokemonName" placeholder="Digite o nome do Pokémon">
+                <button onclick="fetchPokemon()">Buscar</button>
+            </div>
+            <div class="pokedex-footer">
+                <p>© 2023 Pokédex Master</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function fetchPokemon() {
+            const pokemonName = document.getElementById('pokemonName').value.toLowerCase();
+            const pokemonInfo = document.getElementById('pokemonInfo');
+
+            // Limpa o conteúdo anterior
+            pokemonInfo.innerHTML = '<div class="loading">Carregando...</div>';
+
+            try {
+                const response = await fetch(`http://localhost:3000/pokemon/${pokemonName}`);
+                const data = await response.json();
+
+                pokemonInfo.innerHTML = `
+                    <h2>${data.name.toUpperCase()}</h2>
+                    <img src="${data.sprites.front_default}" alt="${data.name}">
+                    <p><strong>Altura:</strong> ${data.height / 10}m</p>
+                    <p><strong>Peso:</strong> ${data.weight / 10}kg</p>
+                    <p><strong>Tipo:</strong> ${data.types.map(type => type.type.name).join(', ')}</p>
+                    <p><strong>Habilidades:</strong> ${data.abilities.map(ability => ability.ability.name).join(', ')}</p>
+                `;
+            } catch (error) {
+                pokemonInfo.innerHTML = '<p class="error">Pokémon não encontrado!</p>';
+            }
+        }
+    </script>
+</body>
+</html>
